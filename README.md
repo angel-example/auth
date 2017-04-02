@@ -18,6 +18,25 @@ const List<String> GOOGLE_AUTH_SCOPES = const [
   PlusApi.UserinfoProfileScope
 ];
 
+configureAuth(Angel app) async {
+  /// Set up authentication strategies
+  var auth = new AngelAuth()..strategies.addAll([
+    new LocalAuthStrategy(localVerifier(app.service('api/users')),
+    new GoogleStrategy(
+      config: GOOGLE_AUTH_CONFIG,
+      scopes: GOOGLE_AUTH_SCOPES,
+      callback: googleAuthCallback(app.service('api/users')))
+  ]);
+  
+  // Add authentication routes with ease
+  app.post('/auth/local', auth.authenticate('local'));
+  app.get('/auth/google', auth.authenticate('google'));
+  app.get(
+    '/auth/google/callback',
+      auth.authenticate('google', new AngelAuthOptions(callback: confirmPopupAuthentication()))
+  );
+}
+
 GoogleAuthCallback googleAuthCallback(Service userService) {
   return (client, Person profile) async {
     List<User> users = await userService.index({
@@ -45,24 +64,5 @@ LocalAuthVerifier localVerifier(Service userService) {
       }, orElse: () => null);
     }
   };
-}
-
-configureAuth(Angel app) async {
-  /// Set up authentication strategies
-  var auth = new AngelAuth()..strategies.addAll([
-    new LocalAuthStrategy(localVerifier(app.service('api/users')),
-    new GoogleStrategy(
-      config: GOOGLE_AUTH_CONFIG,
-      scopes: GOOGLE_AUTH_SCOPES,
-      callback: googleAuthCallback(app.service('api/users')))
-  ]);
-  
-  // Add authentication routes with ease
-  app.post('/auth/local', auth.authenticate('local'));
-  app.get('/auth/google', auth.authenticate('google'));
-  app.get(
-    '/auth/google/callback',
-      auth.authenticate('google', new AngelAuthOptions(callback: confirmPopupAuthentication()))
-  );
 }
 ```
