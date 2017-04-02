@@ -58,6 +58,9 @@ configureAuth(Angel app) async {
   
   app.post('/auth/local', auth.authenticate('local'));
   app.get('/auth/google', auth.authenticate('google'));
-  app.get('/auth/google/callback', auth.authenticate('google', new AngelAuthOptions(callback: confirmPopupAuthentication())));
+  app.get(
+    '/auth/google/callback',
+      auth.authenticate('google', new AngelAuthOptions(callback: confirmPopupAuthentication()))
+  );
 }
 ```
