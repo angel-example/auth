@@ -48,6 +48,7 @@ LocalAuthVerifier localVerifier(Service userService) {
 }
 
 configureAuth(Angel app) async {
+  /// Set up authentication strategies
   var auth = new AngelAuth()..strategies.addAll([
     new LocalAuthStrategy(localVerifier(app.service('api/users')),
     new GoogleStrategy(
@@ -56,6 +57,7 @@ configureAuth(Angel app) async {
       callback: googleAuthCallback(app.service('api/users')))
   ]);
   
+  // Add authentication routes with ease
   app.post('/auth/local', auth.authenticate('local'));
   app.get('/auth/google', auth.authenticate('google'));
   app.get(
