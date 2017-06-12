@@ -40,13 +40,13 @@ configureAuth(Angel app) async {
 GoogleAuthCallback googleAuthCallback(Service userService) {
   return (client, Person profile) async {
     List<User> users = await userService.index({
-      'query': {'googleId': person.id}
+      'query': {'googleId': profile.id}
     });
 
     if (users.isNotEmpty)
       return users.first;
     else {
-      return await userService.create({'googleId': person.id});
+      return await userService.create({'googleId': profile.id});
     }
   };
 }
